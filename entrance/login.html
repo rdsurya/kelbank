@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KelBank | Login</title>
+
+  <link href="styling2.css" rel="stylesheet">
+
+</head>
+<body style="background-image: url(bg.jpg)">
+
+<div style="background-color:black; height:60px">
+  <h1 style="display:inline;float left;"><span style="color:white"><span style="color:orange">$$$</span>Kel</span><span style="color:orange">Bank</span></h1>
+  <span style="display:inline; float: right;">
+      <button onclick="document.getElementById('id01').style.display='block'" style="width:auto; background-color:orange">Login</button>
+    </span>
+</div>
+
+
+<div style="clear:both"></div>
+
+
+
+<div id="id01" class="modal">
+
+  <form class="modal-content animate" action="#" id="leForm">
+    <div class="imgcontainer">
+      <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+      <img src="kelbank.jpg" alt="Avatar" class="avatar">
+    </div>
+
+    <div class="container" style="width:50%; margin:auto">
+      <label><b>Username</b></label>
+      <input id="username" type="text" placeholder="Enter Username" maxlength="50" name="uname" required>
+
+      <label><b>Password</b></label>
+      <input id="password" type="password" placeholder="Enter Password" maxlength="50" name="psw" required>
+
+      <button type="submit" style="background-color:orange">Login</button>
+
+    </div>
+
+    <div class="container" style="background-color:#f1f1f1">
+      <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+      <span class="psw">Forgot <a href="#">password?</a></span>
+    </div>
+  </form>
+</div>
+
+<script src="validator.js"></script>
+<script>
+// Get the modal
+var modal = document.getElementById('id01');
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+var form = document.getElementById("leForm");
+form.onsubmit = function(e) {
+
+  e.preventDefault();
+  var username = document.getElementById('username').value;
+  var password = document.getElementById('password').value;
+
+  if(username !== "" && password !== ""){
+
+    if(!lengthRange(password, 6, 50)){
+
+        alert("Password length must be between 6 to 50 characters!");
+        document.getElementById('username').value="";
+        document.getElementById('password').value="";
+
+    }else{
+      alert("Login success!");
+      modal.style.display = "none";
+      document.getElementById('username').value="";
+      document.getElementById('password').value="";
+    }
+
+  }
+
+
+
+}
+</script>
+
+</body>
+</html>
