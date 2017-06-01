@@ -22,33 +22,7 @@ if(!isset($_SESSION['USERNAME'])){
 </head>
 <body>
   <nav class=" grey darken-1" role="navigation">
-    <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">KelBank</a>
-      <ul class="right hide-on-med-and-down">
-        <li><a href="../entrance/login.php">Logout</a></li>
-      </ul>
-
-	  <ul class="right hide-on-med-and-down">
-        <li><a href="#">Profile</a></li>
-      </ul>
-
-	  <ul class="right hide-on-med-and-down">
-        <li><a href="transaction.php">Transactions</a></li>
-      </ul>
-
-	  <ul class="right hide-on-med-and-down">
-        <li><a href="accounts.php">Accounts</a></li>
-      </ul>
-
-	  <ul class="right hide-on-med-and-down">
-        <li><a href="registration.php">Registration</a></li>
-      </ul>
-
-      <ul id="nav-mobile" class="side-nav">
-        <li><a href="#">Navbar Link</a></li>
-      </ul>
-
-      <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
-    </div>
+    <?php include 'library/nav_file.html' ;?>
   </nav>
 
   <!--Contain of webpage-->
