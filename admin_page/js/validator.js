@@ -55,3 +55,9 @@ function isAlphaNumeric(str) {
   }
   return true;
 }
+
+function isValidName(str){
+
+  var reg = /^[A-Za-z\d\s]+$/;
+  return reg.test(str);
+}

@@ -27,7 +27,8 @@ if(!isset($_SESSION['USERNAME'])){
 
   <!--Contain of webpage-->
 
-  <div class="container">
+<div class="container">
+  <h5>Hi <?= $_SESSION['NAME']?> !</h5>
 	<div class="row" style="height:20px">
 	</div>
 
@@ -36,8 +37,9 @@ if(!isset($_SESSION['USERNAME'])){
         <div class="input-field">
           <input id="search" type="search" required placeholder="Search customer">
           <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-          <i class="material-icons">close</i>
+          <i class="material-icons" onclick="$('#search').val(''); $('#match').html('');">close</i>
         </div>
+        <div class="search-drop" id="match"></div>
       </form>
     </div>
 
@@ -59,7 +61,7 @@ if(!isset($_SESSION['USERNAME'])){
 		<form id="leForm" class="col s12">
 
 		<table>
-			<tr>
+			<!-- <tr>
 				<td class="kasi-right">
 					Bank Card ID:
 				</td>
@@ -74,8 +76,8 @@ if(!isset($_SESSION['USERNAME'])){
 
         <!-- <td>
           <button id="btn_generate_card" class="btn waves-effect waves-light" name="action">Generate</button>
-        </td> -->
-			</tr>
+        </td>
+			</tr> -->
 
 			<tr>
 				<td class="kasi-right">
@@ -173,7 +175,7 @@ if(!isset($_SESSION['USERNAME'])){
 				</td>
 			</tr>
 
-			<tr>
+			<!-- <tr>
 				<td class="kasi-right">
 					Country:
 				</td>
@@ -183,7 +185,7 @@ if(!isset($_SESSION['USERNAME'])){
 					  <input placeholder="" id="country" type="text" class="validate" maxlength="20">
 					</div>
 				</td>
-			</tr>
+			</tr> -->
 
 			<tr>
 				<td class="kasi-right">
@@ -297,7 +299,10 @@ if(!isset($_SESSION['USERNAME'])){
       $('#btnSubmit').show();
       $('#btn_generate_card').show();
       $('#btn_generate_card').prop('disabled', false);
+      $('#username').prop('readonly', false);
       $('#btnUpdate').hide();
+      $('#match').html('');
+      $('#search').val('');
 
     }
 
@@ -305,6 +310,7 @@ if(!isset($_SESSION['USERNAME'])){
       $('#btnSubmit').hide();
       $('#btn_generate_card').hide();
       $('#btnUpdate').show();
+      $('#username').prop('readonly', true);
     }
 
     $('#btnClear').on('click', function(e){
@@ -316,7 +322,7 @@ if(!isset($_SESSION['USERNAME'])){
     function validate_form(){
       var betul = true;
 
-      var cardID = $('#cardID').val();
+      //var cardID = $('#cardID').val();
       var fname = $('#first_name').val();
       var lname = $('#last_name').val();
       var phone = $('#contact_no').val();
@@ -325,13 +331,13 @@ if(!isset($_SESSION['USERNAME'])){
       var postcode = $('#postcode').val();
       var city = $('#city').val();
       var state = $('#state').val();
-      var country = $('#country').val();
+      //var country = $('#country').val();
       var username = $('#username').val();
       var password = $('#password').val();
       var password2 = $('#password2').val();
 
-      if(cardID === '' || fname === '' || lname === '' || phone === ''|| email === ''
-        || street === '' || postcode === '' || city === '' || state === '' || country === ''
+      if(fname === '' || lname === '' || phone === ''|| email === ''
+        || street === '' || postcode === '' || city === '' || state === ''
           || username === '' || password === ''|| password2 === ''){
 
         betul = false;
@@ -363,7 +369,7 @@ if(!isset($_SESSION['USERNAME'])){
         });
 
       }
-      else if(validatePhonenumber(postcode)){
+      else if(!validatePhonenumber(postcode)){
         betul = false;
           swal({
             title: "Error!",
@@ -372,7 +378,7 @@ if(!isset($_SESSION['USERNAME'])){
             confirmButtonText: "OK"
         });
       }
-      else if(!isAlphaNumeric(fname+lname+password+username)){
+      else if(!isAlphaNumeric(password+username)){
         betul = false;
           swal({
             title: "Error!",
@@ -428,18 +434,183 @@ if(!isset($_SESSION['USERNAME'])){
 
     //--------------------submit registration ----------------
     $('#btnSubmit').on('click', function(e){
-
+      e.preventDefault();
       var betul = validate_form();
 
       if(betul){
-        console.log('oke');
+        var fname = $('#first_name').val();
+        var lname = $('#last_name').val();
+        var phone = $('#contact_no').val();
+        var email = $('#email').val();
+        var street = $('#street_address').val();
+        var postcode = $('#postcode').val();
+        var city = $('#city').val();
+        var state = $('#state').val();
+        var username = $('#username').val();
+        var password = $('#password').val();
+        var password2 = $('#password2').val();
+
+        var data = {
+          fname: fname,
+          lname: lname,
+          phone: phone,
+          email: email,
+          street: street,
+          postcode: postcode,
+          city: city,
+          state: state,
+          username: username,
+          password: password
+        };
+
+        $.ajax({
+          type: 'POST',
+          url: 'controller/register_user.php',
+          data: data,
+          success: function(dataB){
+            var msg = '';
+
+            if(dataB.trim() === '1'){
+              msg = 'User registered successfully';
+              swal("Done!", msg, "success");
+              display_insert();
+            }
+            else if(dataB.trim() === '2'){
+              msg = 'Username has been used! Enter different username';
+              swal("Opps!", msg, "error");
+            }
+            else if(dataB.trim() === '3'){
+              msg = 'Try again later';
+              swal("Opps!", msg, "error");
+            }
+          },
+          error: function(jqxhr, textStatus, errorThrown){
+            swal({
+              title: "Error!",
+              text: "Something went wrong: "+ errorThrown,
+              type: "error",
+              //customClass: 'custom-dialog-class',
+              confirmButtonText: "OK"
+            });
+          }
+        });
+
       }
       else{
         return false;
       }
-      e.preventDefault();
+
     });
     //===========================================================
+
+    //---------------update user ----------------------------
+    $('#btnUpdate').on('click', function(e){
+      e.preventDefault();
+      var betul = validate_form();
+
+      if(betul){
+        var fname = $('#first_name').val();
+        var lname = $('#last_name').val();
+        var phone = $('#contact_no').val();
+        var email = $('#email').val();
+        var street = $('#street_address').val();
+        var postcode = $('#postcode').val();
+        var city = $('#city').val();
+        var state = $('#state').val();
+        var username = $('#username').val();
+        var password = $('#password').val();
+        var password2 = $('#password2').val();
+
+        var data = {
+          fname: fname,
+          lname: lname,
+          phone: phone,
+          email: email,
+          street: street,
+          postcode: postcode,
+          city: city,
+          state: state,
+          username: username,
+          password: password
+        };
+
+        $.ajax({
+          type: 'POST',
+          url: 'controller/update_user.php',
+          data: data,
+          success: function(dataB){
+            var msg = '';
+
+            if(dataB.trim() === '1'){
+              msg = 'User updated successfully';
+              swal("Done!", msg, "success");
+              //display_insert();
+            }
+            else if(dataB.trim() === '3'){
+              msg = 'Try again later';
+              swal("Opps!", msg, "error");
+            }
+          },
+          error: function(jqxhr, textStatus, errorThrown){
+            swal({
+              title: "Error!",
+              text: "Something went wrong: "+ errorThrown,
+              type: "error",
+              //customClass: 'custom-dialog-class',
+              confirmButtonText: "OK"
+            });
+          }
+        });
+
+      }
+      else{
+        return false;
+      }
+
+    });
+    //======================================================
+
+    //----------------------search user -----------------------
+      $('#search').on('keyup', function(){
+        var input = $(this).val();
+        console.log(input);
+        if(input.length > 0){
+          var data = {input: input};
+          $.ajax({
+            type: 'POST',
+            url: 'controller/search_user.php',
+            data: data,
+            success: function(dataB){
+              $('#match').html(dataB);
+              $('#matchlist li').on('click', function () { // When click on an element in the list
+                          // Update the field with the new element
+                  $('#search').val($(this).text());
+                  $('#username').val($(this).data('username'));
+                  $('#first_name').val($(this).data('fname'));
+                  $('#last_name').val($(this).data('lname'));
+                  $('#contact_no').val($(this).data('phone'));
+                  $('#email').val($(this).data('email'));
+                  $('#street_address').val($(this).data('street'));
+                  $('#postcode').val($(this).data('postcode'));
+                  $('#city').val($(this).data('city'));
+                  $('#state').val($(this).data('state'));
+                  $('#password').val($(this).data('password'));
+                  $('#password2').val($(this).data('password'));
+                  $('#match').text(''); // Clear the <div id="PM_match_system"></div>
+                  display_update();
+
+              });
+            },
+            error: function(jqxhr, textStatus, errorThrown){
+              swal("Error", errorThrown, "error");
+            }
+          });
+        }
+        else{
+          $('#match').html('');
+        }
+      });
+    //=========================================================
   </script>
 
   </body>

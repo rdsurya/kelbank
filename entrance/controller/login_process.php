@@ -6,7 +6,7 @@ if(isset($_POST['username'])){
 
   $username = $_POST['username'];
   $password = $_POST['password'];
-  $sql = "SELECT password FROM user u join admin a using(username) WHERE a.username='$username' limit 1";
+  $sql = "SELECT password, name FROM admin WHERE username='$username' limit 1";
 	$result = mysqli_query($conn,$sql) or die ("Error running MySQL query");
 	if($row = mysqli_fetch_assoc($result)){
 
@@ -14,6 +14,7 @@ if(isset($_POST['username'])){
 
     if(strcmp($password, $pass2) == 0){
       $_SESSION['USERNAME'] = $username;
+      $_SESSION['NAME'] = $row['name'];
       echo "1";
     }
     else{
