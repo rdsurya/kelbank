@@ -38,6 +38,7 @@ if(!isset($_SESSION['USERNAME'])){
           <label class="label-icon" for="search"><i class="material-icons">search</i></label>
           <i class="material-icons">close</i>
         </div>
+        <div id="match"></div>
       </form>
     </div>
 
@@ -56,11 +57,11 @@ if(!isset($_SESSION['USERNAME'])){
 		</div>
 
 
-		<form class="col s12">
+		<form class="col s12" id="leForm">
 
 		<table>
-			<tr>
-				<td>
+			<!-- <tr>
+				<td class="kasi-right">
 					Bank Card ID:
 				</td>
 
@@ -69,33 +70,46 @@ if(!isset($_SESSION['USERNAME'])){
 					  <input placeholder="" id="cardID" type="text" class="validate">
 					</div>
 				</td>
-			</tr>
+			</tr> -->
 
 			<tr>
-				<td>
+				<td class="kasi-right">
 					Full Name:
 				</td>
 
 				<td>
 					<div class="input-field col s12">
-					  <input placeholder="" id="full_name" type="text" class="validate">
+					  <input placeholder="Search customer" id="full_name" type="text" class="validate">
+					</div>
+          <div id="match_u"></div>
+				</td>
+			</tr>
+
+      <tr>
+				<td class="kasi-right">
+					Username:
+				</td>
+
+				<td>
+					<div class="input-field col s12">
+					  <input placeholder="Auto fill" id="username" type="text" class="validate" readonly>
 					</div>
 				</td>
 			</tr>
 
 			<tr>
-				<td>
+				<td class="kasi-right">
 					Account ID:
 				</td>
 
 				<td>
 					<div class="input-field col s12">
-					  <input placeholder="" id="account_ID" type="text" class="validate">
+					  <input placeholder="Will be generated later" id="account_ID" type="text" class="validate">
 					</div>
 				</td>
 			</tr>
 
-			<tr>
+			<!-- <tr>
 				<td>
 					Account type:
 				</td>
@@ -110,28 +124,28 @@ if(!isset($_SESSION['USERNAME'])){
 						</select>
 					</div>
 				</td>
-			</tr>
+			</tr> -->
 
 			<tr>
-				<td>
+				<td class="kasi-right">
 					Account amount:
 				</td>
 
 				<td>
 					<div class="input-field col s12">
-					  <input placeholder="" id="street_address" type="number" class="validate">
+					  <input placeholder="Enter money amount (RM)" id="amount" type="number" class="validate">
 					</div>
 				</td>
 			</tr>
 
-			<tr>
+			<!-- <tr>
 				<td>
 					Account Status:
 				</td>
 
-				<td>
+				<td> -->
 					<!-- Switch -->
-					  <div class="switch">
+					  <!-- <div class="switch">
 						<label>
 						  Active
 						  <input type="checkbox">
@@ -140,16 +154,18 @@ if(!isset($_SESSION['USERNAME'])){
 						</label>
 					  </div>
 				</td>
-			</tr>
+			</tr> -->
 		</table>
 
 		<div class="row" style="height:20px">
 		</div>
 
 		<center>
-			<button class="btn waves-effect waves-light" type="submit" name="action">Add</button>
+			<button id="btnAdd" class="btn waves-effect waves-light" type="submit" name="action">Add</button>
 			</td>
-			<button class="btn waves-effect waves-light" type="submit" name="action">Update</button>
+			<button id="btnUpdate" class="btn waves-effect waves-light" type="submit" name="action">Update</button>
+      </td>
+      <button id="btnClear" class="btn waves-effect waves-light" type="submit" name="action">Clear</button>
 		</center>
 
 		<div class="row" style="height:20px">
@@ -194,6 +210,98 @@ if(!isset($_SESSION['USERNAME'])){
 
   <!--  Scripts-->
 <?php include 'library/js_file.html'; ?>
+  <script>
+  $(function(){
+    display_insert();
+  });
+
+  function display_insert(){
+    $('#leForm')[0].reset();
+    $('#btnAdd').show();
+
+
+    $('#full_name').prop('readonly', false);
+    $('#btnUpdate').hide();
+    $('#match_u').html('');
+    $('#full_name').val('');
+
+    $('#match').html('');
+    $('#search').val('');
+
+  }
+
+  function display_update(){
+    $('#btnAdd').hide();
+
+    $('#btnUpdate').show();
+    $('#full_name').prop('readonly', true);
+  }
+
+  $('#btnClear').on('click', function(e){
+    e.preventDefault();
+    display_insert();
+  });
+
+  function validate_form(){
+    var betul = true;
+    var username = $('#username').val();
+    var amount = $('#amount').val();
+
+    if(username === '' || amount === ''){
+      betul = false;
+      swal("Oit!", "Fill in username and amount", "error");
+    }
+    else if(isNaN(amount)){
+      betul = false;
+      swal("Oit!", "Input number only for amount", "error");
+    }
+    else if(amount < 49.99){
+      swal("Oit!", "Insufficient amount. Minimum is RM50.00", "error");
+    }
+
+    return betul;
+  }
+
+  $('#btnAdd').on('click', function(e){
+    e.preventDefault();
+    var betul = validate_form();
+
+  });
+
+  //----------------------search user -----------------------
+    $('#full_name').on('keyup', function(){
+      var input = $(this).val();
+      $('#match').html('');
+      if(input.length > 0){
+        var data = {input: input};
+        $.ajax({
+          type: 'POST',
+          url: 'controller/search_user.php',
+          data: data,
+          success: function(dataB){
+            $('#match_u').html(dataB);
+            $('#matchlist li').on('click', function () { // When click on an element in the list
+                        // Update the field with the new element
+                $('#full_name').val($(this).text());
+                $('#username').val($(this).data('username'));
+
+                $('#match_u').text(''); // Clear the <div id="PM_match_system"></div>
+
+
+            });
+          },
+          error: function(jqxhr, textStatus, errorThrown){
+            swal("Error", errorThrown, "error");
+          }
+        });
+      }
+      else{
+        $('#match_u').html('');
+      }
+    });
+  //=========================================================
+
+  </script>
 
   </body>
 </html>
